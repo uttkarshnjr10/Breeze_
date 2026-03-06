@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package breeze.auth;
+
+option java_package = "com.breeze.proto.auth";
+option go_package = "github.com/breeze-travel/proto/auth";
+
+import "common.proto";
+
+// ─── Auth Service ──────────────────────────────────────────────
+
+/**
+ * Authentication and user profile service.
+ * Handles token validation and user profile retrieval.
+ */
+service AuthService {
+  /**
+   * Validates an authentication token and returns the associated user claims.
+   */
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+
+  /**
+   * Retrieves the full user profile for the given user ID.
+   */
+  rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
+}
+
+// ─── Messages ──────────────────────────────────────────────────
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  string user_id = 2;
+  string email = 3;
+  repeated string roles = 4;
+  string expires_at = 5;  // ISO 8601
+}
+
+message GetUserProfileRequest {
+  string user_id = 1;
+}
+
+message GetUserProfileResponse {
+  string user_id = 1;
+  string email = 2;
+  string display_name = 3;
+  string phone = 4;
+  string avatar_url = 5;
+  repeated string roles = 6;
+  repeated breeze.common.EmergencyContact emergency_contacts = 7;
+  breeze.common.Location home_location = 8;
+  string preferred_language = 9;
+  string created_at = 10;   // ISO 8601
+  string updated_at = 11;   // ISO 8601
+}

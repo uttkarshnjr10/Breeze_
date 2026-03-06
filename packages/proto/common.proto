@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package breeze.common;
+
+option java_package = "com.breeze.proto.common";
+option go_package = "github.com/breeze-travel/proto/common";
+
+// ─── Core Messages ─────────────────────────────────────────────
+
+/**
+ * Geographic location with optional metadata.
+ */
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+  string name = 3;
+  string address = 4;
+  string city = 5;
+  string state = 6;
+  string pincode = 7;
+}
+
+/**
+ * A node in the multi-modal transit graph.
+ * Represents a station, stop, or interchange point.
+ */
+message TransitNode {
+  string node_id = 1;
+  string name = 2;
+  Location location = 3;
+  NodeType node_type = 4;
+  repeated string connected_modes = 5;
+}
+
+/**
+ * Types of transit nodes in the Indian transport network.
+ */
+enum NodeType {
+  NODE_TYPE_UNSPECIFIED = 0;
+  RAILWAY_STATION = 1;
+  BUS_STAND = 2;
+  METRO_STATION = 3;
+  AIRPORT = 4;
+  FERRY_TERMINAL = 5;
+  AUTO_STAND = 6;
+}
+
+/**
+ * A single leg of a multi-modal trip.
+ */
+message TripLeg {
+  string leg_id = 1;
+  int32 sequence = 2;
+  TransitMode mode = 3;
+  Location origin = 4;
+  Location destination = 5;
+  string departure_time = 6;  // ISO 8601
+  string arrival_time = 7;    // ISO 8601
+  int32 duration_minutes = 8;
+  double distance_km = 9;
+  double estimated_cost_inr = 10;
+  string operator_name = 11;
+  string vehicle_number = 12;
+  string platform_info = 13;
+}
+
+/**
+ * Supported transit modes.
+ */
+enum TransitMode {
+  TRANSIT_MODE_UNSPECIFIED = 0;
+  TRAIN = 1;
+  BUS = 2;
+  METRO = 3;
+  AUTO_RICKSHAW = 4;
+  TAXI = 5;
+  FERRY = 6;
+  WALKING = 7;
+  FLIGHT = 8;
+}
+
+/**
+ * Emergency contact information for safety features.
+ */
+message EmergencyContact {
+  string name = 1;
+  string phone = 2;
+  string relationship = 3;
+  bool is_primary = 4;
+}
+
+/**
+ * Standard pagination request parameters.
+ */
+message PaginationRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+/**
+ * Standard pagination response metadata.
+ */
+message PaginationResponse {
+  int32 page = 1;
+  int32 limit = 2;
+  int32 total_count = 3;
+  int32 total_pages = 4;
+}
+
+/**
+ * Standard timestamp range filter.
+ */
+message TimeRange {
+  string start_time = 1;  // ISO 8601
+  string end_time = 2;    // ISO 8601
+}

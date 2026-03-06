@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package breeze.tripgraph;
+
+option java_package = "com.breeze.proto.tripgraph";
+option go_package = "github.com/breeze-travel/proto/tripgraph";
+
+import "common.proto";
+
+// ─── TripGraph Service ─────────────────────────────────────────
+
+/**
+ * Multi-modal route search service.
+ * Computes optimal door-to-door routes across India's transport network.
+ */
+service TripGraphService {
+  /**
+   * Searches for multi-modal routes between origin and destination.
+   * Returns ranked route options with cost, duration, and transfer details.
+   */
+  rpc SearchRoutes(SearchRoutesRequest) returns (SearchRoutesResponse);
+}
+
+// ─── Messages ──────────────────────────────────────────────────
+
+message SearchRoutesRequest {
+  breeze.common.Location origin = 1;
+  breeze.common.Location destination = 2;
+  string departure_time = 3;           // ISO 8601
+  RoutePreferences preferences = 4;
+  int32 max_results = 5;
+}
+
+message RoutePreferences {
+  OptimizeFor optimize_for = 1;
+  repeated breeze.common.TransitMode excluded_modes = 2;
+  int32 max_transfers = 3;
+  double max_walking_km = 4;
+  double max_budget_inr = 5;
+  bool wheelchair_accessible = 6;
+  bool women_only_coach = 7;
+}
+
+enum OptimizeFor {
+  OPTIMIZE_FOR_UNSPECIFIED = 0;
+  FASTEST = 1;
+  CHEAPEST = 2;
+  FEWEST_TRANSFERS = 3;
+  MOST_COMFORTABLE = 4;
+}
+
+message SearchRoutesResponse {
+  repeated RouteOption routes = 1;
+  breeze.common.PaginationResponse pagination = 2;
+  string computed_at = 3;  // ISO 8601
+}
+
+message RouteOption {
+  string route_id = 1;
+  repeated breeze.common.TripLeg legs = 2;
+  RouteSummary summary = 3;
+  double confidence_score = 4;
+  repeated string warnings = 5;
+}
+
+message RouteSummary {
+  int32 total_duration_minutes = 1;
+  double total_distance_km = 2;
+  double total_cost_inr = 3;
+  int32 transfer_count = 4;
+  double walking_distance_km = 5;
+}

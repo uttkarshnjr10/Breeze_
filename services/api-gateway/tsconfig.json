@@ -1,0 +1,28 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "composite": true,
+        "paths": {
+            "@breeze/shared": [
+                "../../packages/shared/src/index.ts"
+            ],
+            "@breeze/shared/*": [
+                "../../packages/shared/src/*"
+            ]
+        }
+    },
+    "references": [
+        {
+            "path": "../../packages/shared"
+        }
+    ],
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package breeze.transit;
+
+option java_package = "com.breeze.proto.transit";
+option go_package = "github.com/breeze-travel/proto/transit";
+
+import "common.proto";
+
+// ─── Transit Service ───────────────────────────────────────────
+
+/**
+ * Real-time transit data service.
+ * Provides train schedules, local transport options, and live tracking.
+ */
+service TransitService {
+  /**
+   * Returns available train options between two stations.
+   */
+  rpc GetTrainOptions(GetTrainOptionsRequest) returns (GetTrainOptionsResponse);
+
+  /**
+   * Returns local transport options (auto, bus, metro) near a location.
+   */
+  rpc GetLocalOptions(GetLocalOptionsRequest) returns (GetLocalOptionsResponse);
+}
+
+// ─── Train Messages ────────────────────────────────────────────
+
+message GetTrainOptionsRequest {
+  string origin_station_code = 1;
+  string destination_station_code = 2;
+  string date = 3;                       // YYYY-MM-DD
+  repeated TrainClass preferred_classes = 4;
+  int32 max_results = 5;
+}
+
+enum TrainClass {
+  TRAIN_CLASS_UNSPECIFIED = 0;
+  SLEEPER = 1;
+  THIRD_AC = 2;
+  SECOND_AC = 3;
+  FIRST_AC = 4;
+  CHAIR_CAR = 5;
+  SECOND_SITTING = 6;
+  GENERAL = 7;
+}
+
+message GetTrainOptionsResponse {
+  repeated TrainOption trains = 1;
+  string fetched_at = 2;  // ISO 8601
+}
+
+message TrainOption {
+  string train_number = 1;
+  string train_name = 2;
+  string departure_time = 3;
+  string arrival_time = 4;
+  int32 duration_minutes = 5;
+  repeated ClassAvailability availability = 6;
+  bool runs_on_date = 7;
+  repeated string running_days = 8;
+  int32 distance_km = 9;
+}
+
+message ClassAvailability {
+  TrainClass train_class = 1;
+  string availability_status = 2;  // e.g., "AVAILABLE", "RAC", "WAITLIST"
+  double fare_inr = 3;
+  int32 waitlist_position = 4;
+}
+
+// ─── Local Transport Messages ──────────────────────────────────
+
+message GetLocalOptionsRequest {
+  breeze.common.Location location = 1;
+  double radius_km = 2;
+  repeated breeze.common.TransitMode modes = 3;
+}
+
+message GetLocalOptionsResponse {
+  repeated LocalOption options = 1;
+  string fetched_at = 2;  // ISO 8601
+}
+
+message LocalOption {
+  string option_id = 1;
+  breeze.common.TransitMode mode = 2;
+  string operator_name = 3;
+  breeze.common.Location pickup = 4;
+  double estimated_fare_inr = 5;
+  int32 estimated_wait_minutes = 6;
+  double distance_km = 7;
+  string route_info = 8;
+}

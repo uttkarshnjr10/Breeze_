@@ -1,0 +1,62 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": [
+        "**/.env.*local"
+    ],
+    "globalEnv": [
+        "NODE_ENV"
+    ],
+    "tasks": {
+        "build": {
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": [
+                "dist/**"
+            ],
+            "inputs": [
+                "src/**/*.ts",
+                "tsconfig.json"
+            ]
+        },
+        "dev": {
+            "dependsOn": [
+                "^build"
+            ],
+            "persistent": true,
+            "cache": false
+        },
+        "test": {
+            "dependsOn": [
+                "build"
+            ],
+            "outputs": [
+                "coverage/**"
+            ],
+            "inputs": [
+                "src/**/*.ts",
+                "test/**/*.ts"
+            ]
+        },
+        "lint": {
+            "dependsOn": [],
+            "outputs": [],
+            "inputs": [
+                "src/**/*.ts"
+            ]
+        },
+        "migrate": {
+            "dependsOn": [],
+            "cache": false
+        },
+        "clean": {
+            "cache": false
+        },
+        "tripgraph-service#build": {
+            "dependsOn": [
+                "transit-service#build",
+                "^build"
+            ]
+        }
+    }
+}

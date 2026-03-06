@@ -1,0 +1,335 @@
+# ═══════════════════════════════════════════════════════════════
+# Breeze API Gateway — GraphQL Schema
+# ═══════════════════════════════════════════════════════════════
+
+# ─── Custom Directives ──────────────────────────────────────────
+
+directive @auth(role: String) on FIELD_DEFINITION
+directive @cacheControl(maxAge: Int!) on FIELD_DEFINITION
+
+# ─── Enums ──────────────────────────────────────────────────────
+
+enum TripStatus {
+  DRAFT
+  PLANNED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum LegType {
+  WALK
+  AUTO_RICKSHAW
+  BUS
+  METRO
+  LOCAL_TRAIN
+  EXPRESS_TRAIN
+  FLIGHT
+  FERRY
+  CAB
+  E_RICKSHAW
+}
+
+enum TransportMode {
+  WALK
+  AUTO_RICKSHAW
+  BUS
+  METRO
+  LOCAL_TRAIN
+  EXPRESS_TRAIN
+  FLIGHT
+  FERRY
+  CAB
+  E_RICKSHAW
+}
+
+enum TransitNodeType {
+  RAILWAY_STATION
+  BUS_STOP
+  METRO_STATION
+  AIRPORT
+  FERRY_TERMINAL
+  AUTO_STAND
+  INTERSECTION
+}
+
+enum SafetyLevel {
+  SAFE
+  MODERATE
+  CAUTION
+  UNSAFE
+  UNKNOWN
+}
+
+enum RoutePriority {
+  FASTEST
+  CHEAPEST
+  FEWEST_TRANSFERS
+  MOST_COMFORTABLE
+}
+
+# ─── Core Types ─────────────────────────────────────────────────
+
+type Location {
+  latitude: Float!
+  longitude: Float!
+  address: String
+  landmark: String
+}
+
+input LocationInput {
+  latitude: Float!
+  longitude: Float!
+  address: String
+  landmark: String
+}
+
+type TransitNode {
+  id: ID!
+  name: String!
+  type: TransitNodeType!
+  location: Location!
+  code: String
+}
+
+type TripLeg {
+  legId: ID!
+  type: LegType!
+  origin: TransitNode!
+  destination: TransitNode!
+  departureTime: String!
+  arrivalTime: String!
+  durationMinutes: Int!
+  distanceKm: Float!
+  estimatedCostInr: Float!
+  operator: String
+  vehicleInfo: String
+  seatClass: String
+  platformNumber: String
+}
+
+type FareEstimate {
+  legType: LegType!
+  minCostInr: Float!
+  maxCostInr: Float!
+  currency: String!
+  source: String!
+  updatedAt: String!
+}
+
+# ─── Trip Types ─────────────────────────────────────────────────
+
+type RouteSummary {
+  totalDurationMinutes: Int!
+  totalDistanceKm: Float!
+  totalCostInr: Float!
+  transferCount: Int!
+  walkingDistanceKm: Float!
+}
+
+type RouteOption {
+  routeId: ID!
+  legs: [TripLeg!]!
+  summary: RouteSummary!
+  confidenceScore: Float!
+  warnings: [String!]
+}
+
+type SearchRoutesResult {
+  routes: [RouteOption!]!
+  computedAt: String!
+}
+
+type Trip {
+  id: ID!
+  userId: ID!
+  routeId: String!
+  status: TripStatus!
+  legs: [TripLeg!]!
+  summary: RouteSummary!
+  savedAt: String!
+}
+
+input SearchRoutesInput {
+  origin: LocationInput!
+  destination: LocationInput!
+  departureTime: String!
+  priority: RoutePriority
+  maxResults: Int
+  maxTransfers: Int
+  maxWalkingKm: Float
+  maxBudgetInr: Float
+  excludedModes: [TransportMode!]
+  wheelchairAccessible: Boolean
+  womenOnlyCoach: Boolean
+}
+
+input SaveTripInput {
+  routeId: String!
+  legs: [SaveTripLegInput!]!
+}
+
+input SaveTripLegInput {
+  legId: String!
+  type: LegType!
+  estimatedCostInr: Float!
+}
+
+# ─── Safety Types ───────────────────────────────────────────────
+
+type SafetyPulse {
+  nodeId: ID!
+  level: SafetyLevel!
+  crowdDensity: Float
+  lastIncidentAt: String
+  advisories: [String!]
+  updatedAt: String!
+}
+
+type SafetyAlert {
+  id: ID!
+  nodeId: ID!
+  level: SafetyLevel!
+  title: String!
+  description: String!
+  issuedAt: String!
+  expiresAt: String
+}
+
+# ─── Community Types ────────────────────────────────────────────
+
+type Post {
+  id: ID!
+  authorId: ID!
+  authorName: String!
+  title: String!
+  body: String!
+  tags: [String!]
+  upvotes: Int!
+  createdAt: String!
+}
+
+type Review {
+  id: ID!
+  authorId: ID!
+  targetNodeId: ID!
+  rating: Int!
+  body: String!
+  createdAt: String!
+}
+
+input SubmitReviewInput {
+  targetNodeId: ID!
+  rating: Int!
+  body: String!
+}
+
+# ─── SOS Types ──────────────────────────────────────────────────
+
+type SOSResponse {
+  acknowledged: Boolean!
+  timestamp: String!
+  sosId: String!
+}
+
+input TriggerSOSInput {
+  location: LocationInput!
+  message: String
+}
+
+# ─── Expense Types ──────────────────────────────────────────────
+
+type TripExpenseSummary {
+  tripId: ID!
+  totalEstimatedInr: Float!
+  totalActualInr: Float!
+  legs: [LegExpense!]!
+  updatedAt: String!
+}
+
+type LegExpense {
+  legId: ID!
+  estimatedCostInr: Float!
+  actualCostInr: Float
+}
+
+type BudgetAlert {
+  tripId: ID!
+  message: String!
+  overageInr: Float!
+  triggeredAt: String!
+}
+
+input UpdateActualCostInput {
+  tripId: ID!
+  legId: ID!
+  actualCostInr: Float!
+}
+
+# ─── Packing List Types ────────────────────────────────────────
+
+type PackingList {
+  tripId: ID!
+  items: [PackingItem!]!
+}
+
+type PackingItem {
+  id: ID!
+  name: String!
+  category: String!
+  packed: Boolean!
+}
+
+# ─── Queries ────────────────────────────────────────────────────
+
+type Query {
+  """Search multi-modal routes between two locations."""
+  searchRoutes(input: SearchRoutesInput!): SearchRoutesResult!
+    @auth
+
+  """Get a saved trip by ID."""
+  getTrip(tripId: ID!): Trip
+    @auth
+
+  """Get all trips for the authenticated user."""
+  getMyTrips: [Trip!]!
+    @auth
+
+  """Real-time safety pulse for a transit node."""
+  getSafetyPulse(nodeId: ID!): SafetyPulse!
+    @auth
+    @cacheControl(maxAge: 60)
+
+  """Fare estimate for a specific leg type and route."""
+  getFareEstimate(legType: LegType!, originNodeId: ID!, destNodeId: ID!): FareEstimate!
+    @auth
+    @cacheControl(maxAge: 60)
+
+  """Browse community posts with optional tag filter."""
+  getCommunityPosts(tag: String, limit: Int, offset: Int): [Post!]!
+    @auth
+}
+
+# ─── Mutations ──────────────────────────────────────────────────
+
+type Mutation {
+  """Save a route as a trip."""
+  saveTrip(input: SaveTripInput!): Trip!
+    @auth
+
+  """Update actual cost for a trip leg."""
+  updateActualCost(input: UpdateActualCostInput!): TripExpenseSummary!
+    @auth
+
+  """Submit a fare data point."""
+  submitFare(legType: LegType!, costInr: Float!, routeDescription: String!): Boolean!
+    @auth
+
+  """Submit a review for a transit node."""
+  submitReview(input: SubmitReviewInput!): Review!
+    @auth
+
+  """Trigger an emergency SOS alert."""
+  triggerSOS(input: TriggerSOSInput!): SOSResponse!
+    @auth
+}
