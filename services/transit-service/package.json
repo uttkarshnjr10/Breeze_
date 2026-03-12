@@ -2,21 +2,35 @@
     "name": "@breeze/transit-service",
     "version": "0.1.0",
     "private": true,
-    "description": "Breeze Transit Service — real-time train, bus, and local transport data",
-    "main": "./dist/index.js",
+    "description": "Breeze Transit Intelligence Service — normalized data layer for external transport APIs",
+    "main": "./dist/server.js",
     "scripts": {
         "build": "tsc -b",
-        "dev": "tsx watch src/index.ts",
-        "start": "node dist/index.js",
+        "dev": "tsx watch src/server.ts",
+        "start": "node dist/server.js",
         "clean": "rm -rf dist *.tsbuildinfo",
         "lint": "echo \"lint placeholder\"",
         "test": "echo \"test placeholder\""
     },
     "dependencies": {
-        "@breeze/shared": "*"
+        "@breeze/shared": "*",
+        "fastify": "^4.26.0",
+        "@fastify/cors": "^9.0.0",
+        "pg": "^8.11.0",
+        "ioredis": "^5.3.0",
+        "kafkajs": "^2.2.0",
+        "zod": "^3.22.0",
+        "date-fns": "^3.3.0",
+        "date-fns-tz": "^3.0.0",
+        "@opentelemetry/api": "^1.7.0",
+        "@opentelemetry/sdk-metrics": "^1.22.0",
+        "@opentelemetry/sdk-node": "^0.48.0",
+        "pino": "^8.18.0"
     },
     "devDependencies": {
         "typescript": "^5.4.0",
-        "tsx": "^4.7.0"
+        "tsx": "^4.7.0",
+        "@types/node": "^20.11.0",
+        "@types/pg": "^8.11.0"
     }
 }

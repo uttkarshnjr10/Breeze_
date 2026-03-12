@@ -24,6 +24,40 @@
         "resolveJsonModule": true,
         "isolatedModules": true
     },
+    "files": [],
+    "include": [],
+    "references": [
+        {
+            "path": "./packages/shared"
+        },
+        {
+            "path": "./services/api-gateway"
+        },
+        {
+            "path": "./services/auth-service"
+        },
+        {
+            "path": "./services/community-service"
+        },
+        {
+            "path": "./services/expense-service"
+        },
+        {
+            "path": "./services/flock-service"
+        },
+        {
+            "path": "./services/guard-service"
+        },
+        {
+            "path": "./services/notification-service"
+        },
+        {
+            "path": "./services/offline-service"
+        },
+        {
+            "path": "./services/transit-service"
+        }
+    ],
     "exclude": [
         "node_modules",
         "dist",

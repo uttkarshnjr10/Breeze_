@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "breeze-safety-service"
+version = "0.1.0"
+description = "Breeze Safety Intelligence Service — NLP pipeline + Safety Pulse scoring"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "gunicorn>=21.2.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    # MongoDB
+    "motor>=3.3.0",
+    # Elasticsearch
+    "elasticsearch[async]>=8.12.0",
+    # Redis
+    "redis>=5.0.0",
+    # Kafka
+    "aiokafka>=0.10.0",
+    # NLP
+    "fasttext-wheel>=0.9.2",
+    "transformers>=4.37.0",
+    "torch>=2.1.0",
+    "sentencepiece>=0.2.0",
+    # Caching
+    "cachetools>=5.3.0",
+    # Telemetry
+    "opentelemetry-api>=1.22.0",
+    "opentelemetry-sdk>=1.22.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
